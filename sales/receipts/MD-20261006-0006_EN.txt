@@ -1,0 +1,50 @@
+════════════════════════════════════════════════════════════
+🎯 Official Subscription Receipt
+════════════════════════════════════════════════════════════
+
+📋 Order Number: MD-20261006-0006
+📅 Issue Date:   2026-10-06 06:47
+
+────────────────────────────────────────────────────────────
+👤 Customer Information
+────────────────────────────────────────────────────────────
+   Name:  محمد علي
+   Email: mohamed@test.com
+
+────────────────────────────────────────────────────────────
+📦 Product
+────────────────────────────────────────────────────────────
+   Name:    MaryDubai Multi-Agent System
+   Version: v1.0
+   Desc:    7 AI Agents with Strict Human-in-the-Loop
+
+────────────────────────────────────────────────────────────
+💳 Payment Details
+────────────────────────────────────────────────────────────
+   Tier:     Starter
+   Amount:   49 USD
+   Method:   YouerPay
+   TXN ID:   TXN-MD-20261006-0006
+   Status:   مدفوع ✅ / Paid ✅
+
+────────────────────────────────────────────────────────────
+📥 Download Instructions
+────────────────────────────────────────────────────────────
+   1. Open: https://payhip.com/b/eP6gb
+   2. Enter your email: mohamed@test.com
+   3. Download: marydubai_v1.0_RELEASE.tar.gz
+   4. Extract: tar -xzf marydubai_v1.0_RELEASE.tar.gz
+   5. Run demo: bash demo.sh
+
+────────────────────────────────────────────────────────────
+📞 Support (30 days)
+────────────────────────────────────────────────────────────
+   📧 Email:   fneed68@gmail.com
+   💬 Discord: https://discord.gg/HCb4ufeQDq
+   🌐 Website: https://payhip.com/marydubai
+
+────────────────────────────────────────────────────────────
+✅ Thank you for your trust!
+────────────────────────────────────────────────────────────
+© 2026 MaryDubai - All rights reserved
+════════════════════════════════════════════════════════════

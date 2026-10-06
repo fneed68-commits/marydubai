@@ -1,0 +1,13 @@
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║        🎯 MaryDubai Multi-Agent System v1.0             ║
+║                                                          ║
+║        Human-in-the-Loop AI for:                        ║
+║        • Security Research                               ║
+║        • Financial Analysis                              ║
+║        • Legal Compliance                                ║
+║        • Wallet Security                                 ║
+║                                                          ║
+║        7 Agents | 74 Tests | 100% Pass Rate             ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝

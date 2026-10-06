@@ -1,0 +1,32 @@
+✅ [MaryDubai-RAGTimeManager] تهيئة الوكيل
+   📊 Embedder: LOCAL
+   💾 Index: ./rag_index.db (24 قطعة موجودة)
+
+🔍 [MaryDubai-RAGTimeManager] بحث: 'HITL safety...'
+   ✅ 5 نتيجة
+
+============================================================
+📢 [MaryDubai-RAGTimeManager] تقرير تحليل RAG
+📝 السؤال: HITL safety
+📊 السياقات: 5
+============================================================
+
+[1] 🎯 تشابه: 0.059
+    📁 المصدر: tests/test_main_integration.py
+    📄 # tests/test_main_integration.py """اختبارات تكامل main.py""" import unittest import subprocess import os class TestMainIntegration(unittest.TestCase): def _run(self, *args, input_text=""): """تشغيل m...
+
+[2] 🎯 تشابه: 0.059
+    📁 المصدر: TEST_RESULTS.md
+    📄 # MaryDubai Multi-Agent System - Test Results ## ملخص الاختبارات - التاريخ: 2026-10-05 - إجمالي الاختبارات: 74 - نجحت: 74 (100%) - فشلت: 0 - مدة التشغيل: ~12 ثانية ## الفئات المُختبَرة ### Unit Tests ...
+
+[3] 🎯 تشابه: 0.058
+    📁 المصدر: tests/test_legal_agent.py
+    📄 # tests/test_legal_agent.py """اختبارات الوكيل القانوني""" import unittest from unittest.mock import patch from legal_consultant_agent import LegalConsultantAgent class TestLegalAgent(unittest.TestCas...
+
+   ... و 2 نتيجة إضافية
+
+👤 [الموجه كابتن] هل توافق على تمرير هذا التحليل؟ (yes/no): 🚀 [أمر تمرير] تم اعتماد التحليل. جاري المتابعة...
+📝 [MaryDubai-RAGTimeManager] تم تسجيل القرار.
+
+📊 ملخص الجلسة:
+   {'agent': 'MaryDubai-RAGTimeManager', 'decisions_count': 1, 'total_indexed': 24, 'decisions': [{'decision': 'approved', 'context_ids': [0, 0, 0, 0, 0], 'notes': '', 'timestamp': '2026-10-05T11:26:17.583486'}]}

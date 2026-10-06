@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaryDubai - نظام وكلاء ذكاء اصطناعي</title>
+<meta name="description" content="نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم (HITL)">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#00d9ff;--dark:#0a0e27;--darker:#060818;--light:#fff;--gray:#8892b0;--success:#00ff88}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--darker);color:var(--light);line-height:1.6;overflow-x:hidden}
+header{background:rgba(10,14,39,.95);backdrop-filter:blur(10px);position:fixed;top:0;width:100%;z-index:1000;border-bottom:1px solid rgba(0,217,255,.1)}
+nav{max-width:1200px;margin:0 auto;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.5rem;font-weight:bold;color:var(--primary)}
+.nav-links{display:flex;gap:30px;list-style:none}
+.nav-links a{color:var(--light);text-decoration:none;transition:.3s}
+.nav-links a:hover{color:var(--primary)}
+.hero{padding:140px 20px 80px;text-align:center;background:radial-gradient(ellipse at center,rgba(0,217,255,.15) 0%,transparent 70%)}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);background:linear-gradient(135deg,#00d9ff,#1c75bc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px}
+.hero p{font-size:clamp(1rem,2vw,1.3rem);color:var(--gray);max-width:700px;margin:0 auto 30px}
+.badges{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-bottom:40px}
+.badge{background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.3);padding:8px 16px;border-radius:20px;font-size:.9rem;color:var(--primary)}
+.cta-buttons{display:flex;gap:15px;justify-content:center;flex-wrap:wrap}
+.btn{padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;transition:.3s;display:inline-flex;align-items:center;gap:8px;border:none;font-size:1rem;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#00d9ff,#1c75bc);color:#fff;box-shadow:0 4px 20px rgba(0,217,255,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,217,255,.5)}
+.btn-secondary{background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+section{padding:80px 20px;max-width:1200px;margin:0 auto}
+section h2{font-size:clamp(1.8rem,3vw,2.5rem);text-align:center;margin-bottom:20px}
+section h2 span{color:var(--primary)}
+.section-subtitle{text-align:center;color:var(--gray);margin-bottom:60px;max-width:600px;margin-left:auto;margin-right:auto}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:40px}
+.agent-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;transition:.3s}
+.agent-card:hover{background:rgba(0,217,255,.05);border-color:rgba(0,217,255,.3);transform:translateY(-4px)}
+.agent-icon{font-size:2rem;margin-bottom:12px}
+.agent-card h3{color:var(--primary);margin-bottom:8px;font-size:1.1rem}
+.agent-card p{color:var(--gray);font-size:.9rem}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;margin-top:40px}
+.feature{display:flex;gap:15px}
+.feature-icon{font-size:1.5rem;color:var(--success)}
+.feature h4{margin-bottom:5px}
+.feature p{color:var(--gray);font-size:.9rem}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;margin-top:40px}
+.pricing-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:30px;text-align:center;transition:.3s;position:relative}
+.pricing-card.featured{border-color:var(--primary);box-shadow:0 0 40px rgba(0,217,255,.2);transform:scale(1.05)}
+.pricing-card:hover{transform:translateY(-4px)}
+.pricing-card.featured:hover{transform:scale(1.05) translateY(-4px)}
+.popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:var(--dark);padding:4px 16px;border-radius:20px;font-size:.8rem;font-weight:bold}
+.pricing-card h3{font-size:1.3rem;margin-bottom:15px}
+.price{font-size:3rem;font-weight:bold;color:var(--primary);margin:20px 0}
+.price small{font-size:1rem;color:var(--gray);font-weight:normal}
+.pricing-features{list-style:none;text-align:right;margin:25px 0}
+.pricing-features li{padding:8px 0;color:var(--gray);display:flex;gap:10px}
+.pricing-features li::before{content:"✓";color:var(--success);font-weight:bold}
+.cta-section{background:linear-gradient(135deg,rgba(0,217,255,.1),rgba(28,117,188,.1));border-radius:24px;padding:60px 40px;text-align:center;margin:40px 20px}
+.cta-section h2{margin-bottom:20px}
+.cta-section p{color:var(--gray);margin-bottom:30px}
+footer{background:rgba(0,0,0,.3);padding:40px 20px;text-align:center;color:var(--gray);border-top:1px solid rgba(255,255,255,.05)}
+footer a{color:var(--primary);text-decoration:none}
+@media(max-width:768px){.nav-links{display:none}.pricing-card.featured{transform:none}.pricing-card.featured:hover{transform:translateY(-4px)}}
+</style>
+</head>
+<body>
+<header>
+<nav>
+<div class="logo">🎯 MaryDubai</div>
+<ul class="nav-links">
+<li><a href="#agents">الوكلاء</a></li>
+<li><a href="#features">المميزات</a></li>
+<li><a href="#pricing">الأسعار</a></li>
+<li><a href="https://discord.gg/HCb4ufeQDq">Discord</a></li>
+</ul>
+</nav>
+</header>
+
+<section class="hero">
+<h1>🎯 MaryDubai Multi-Agent System</h1>
+<p>نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم (HITL). مبني بلغة Python، يعمل محلياً بدون الحاجة لخدمات سحابية.</p>
+<div class="badges">
+<span class="badge">✅ 7 وكلاء</span>
+<span class="badge">✅ 74 اختبار</span>
+<span class="badge">✅ 100% نجاح</span>
+<span class="badge">🔒 HITL آمن</span>
+<span class="badge">💻 يعمل محلياً</span>
+</div>
+<div class="cta-buttons">
+<a href="https://payhip.com/b/eP6gb" class="btn btn-primary">🛒 اشترِ الآن - $49</a>
+<a href="#agents" class="btn btn-secondary">📖 اعرف المزيد</a>
+</div>
+</section>
+
+<section id="agents">
+<h2>7 وكلاء <span>متخصصون</span></h2>
+<p class="section-subtitle">كل وكيل متخصص في مجاله، مع تحكم بشري كامل</p>
+<div class="agents-grid">
+<div class="agent-card"><div class="agent-icon">🔍</div><h3>وكيل RAG</h3><p>بحث ذكي في قاعدة معرفة باستخدام SQLite</p></div>
+<div class="agent-card"><div class="agent-icon">⚖️</div><h3>المستشار القانوني</h3><p>تدقيق الامتثال والملكية الفكرية</p></div>
+<div class="agent-card"><div class="agent-icon">🔄</div><h3>كسر الحلقات</h3><p>كشف الحلقات اللانهائية تلقائياً</p></div>
+<div class="agent-card"><div class="agent-icon">⏱️</div><h3>الحواف الزمنية</h3><p>فحص الحدود الزمنية الآمنة</p></div>
+<div class="agent-card"><div class="agent-icon">💰</div><h3>الاستثمار المالي</h3><p>تحليل العوائد والمخاطر</p></div>
+<div class="agent-card"><div class="agent-icon">🧮</div><h3>الرياضيات والفيزياء</h3><p>حسابات علمية دقيقة</p></div>
+<div class="agent-card"><div class="agent-icon">🛡️</div><h3>أمن المحافظ</h3><p>التحقق من العناوين والمعاملات</p></div>
+</div>
+</section>
+
+<section id="features">
+<h2>لماذا <span>MaryDubai</span>؟</h2>
+<p class="section-subtitle">مبني للقطاعات التي تحتاج أماناً وشفافية</p>
+<div class="features-grid">
+<div class="feature"><div class="feature-icon">🔒</div><div><h4>Human-in-the-Loop</h4><p>كل وكيل يتوقف وينتظر موافقتك قبل التنفيذ</p></div></div>
+<div class="feature"><div class="feature-icon">🌐</div><div><h4>يعمل محلياً</h4><p>لا يحتاج خدمات سحابية - يعمل على Termux/Linux/macOS</p></div></div>
+<div class="feature"><div class="feature-icon">📊</div><div><h4>سجل تدقيق كامل</h4><p>كل قرار يُسجَّل مع التاريخ والوقت</p></div></div>
+<div class="feature"><div class="feature-icon">🧪</div><div><h4>74 اختبار ناجح</h4><p>معدل نجاح 100% مع اختبارات الأمان</p></div></div>
+<div class="feature"><div class="feature-icon">📚</div><div><h4>توثيق كامل</h4><p>عربي وإنجليزي، مع أمثلة عملية</p></div></div>
+<div class="feature"><div class="feature-icon">📜</div><div><h4>رخصة تجارية</h4><p>استخدمه في مشاريعك التجارية</p></div></div>
+</div>
+</section>
+
+<section id="pricing">
+<h2>الأسعار <span>والباقات</span></h2>
+<p class="section-subtitle">اختر الباقة المناسبة لاحتياجك</p>
+<div class="pricing-grid">
+<div class="pricing-card">
+<h3>Starter</h3>
+<div class="price">$49<small>/مرة</small></div>
+<ul class="pricing-features">
+<li>مطور واحد</li>
+<li>دعم 30 يوم</li>
+<li>تحديثات 6 أشهر</li>
+<li>رخصة تجارية</li>
+</ul>
+<a href="https://payhip.com/b/eP6gb" class="btn btn-secondary">اشترِ الآن</a>
+</div>
+<div class="pricing-card featured">
+<span class="popular-badge">الأكثر شعبية</span>
+<h3>Professional</h3>
+<div class="price">$149<small>/مرة</small></div>
+<ul class="pricing-features">
+<li>حتى 5 مطورين</li>
+<li>دعم 90 يوم</li>
+<li>تحديثات سنة</li>
+<li>مكالمة إعداد</li>
+</ul>
+<a href="https://payhip.com/b/eP6gb" class="btn btn-primary">اشترِ الآن</a>
+</div>
+<div class="pricing-card">
+<h3>Enterprise</h3>
+<div class="price">$499<small>/مرة</small></div>
+<ul class="pricing-features">
+<li>مطورين غير محدودين</li>
+<li>حقوق White-Label</li>
+<li>دعم سنة</li>
+<li>تكامل مخصص</li>
+</ul>
+<a href="https://payhip.com/b/eP6gb" class="btn btn-secondary">اشترِ الآن</a>
+</div>
+</div>
+</section>
+
+<div class="cta-section">
+<h2>هل لديك أسئلة؟</h2>
+<p>انضم لسيرفر Discord أو راسلنا مباشرة</p>
+<div class="cta-buttons">
+<a href="https://discord.gg/HCb4ufeQDq" class="btn btn-primary">💬 انضم لـ Discord</a>
+<a href="mailto:fneed68@gmail.com" class="btn btn-secondary">📧 راسلنا</a>
+</div>
+</div>
+
+<footer>
+<p>© 2026 MaryDubai - جميع الحقوق محفوظة</p>
+<p style="margin-top:10px">
+<a href="https://payhip.com/marydubai">المتجر</a> • 
+<a href="https://discord.gg/HCb4ufeQDq">Discord</a> • 
+<a href="mailto:fneed68@gmail.com">fneed68@gmail.com</a>
+</p>
+</footer>
+</body>
+</html>

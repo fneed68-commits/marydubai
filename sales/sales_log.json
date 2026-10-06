@@ -1,0 +1,233 @@
+{
+  "sales": [
+    {
+      "order_number": "MD-20261005-0001",
+      "issue_date": "2026-10-05 15:07",
+      "customer": {
+        "name": "أحمد محمد",
+        "email": "ahmed@example.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49,
+        "currency": "USD",
+        "method": "YousrPay",
+        "transaction_id": "sb_txn_demo_123",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    },
+    {
+      "order_number": "MD-20261005-0002",
+      "issue_date": "2026-10-05 15:10",
+      "customer": {
+        "name": "free",
+        "email": "res12@gmail.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49.0,
+        "currency": "6",
+        "method": "yes",
+        "transaction_id": "TXN-MD-20261005-0002",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    },
+    {
+      "order_number": "MD-20261005-0003",
+      "issue_date": "2026-10-05 15:14",
+      "customer": {
+        "name": "احمد",
+        "email": "ahmed@test.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49.0,
+        "currency": "USD",
+        "method": "YousrPay",
+        "transaction_id": "TXN-MD-20261005-0003",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    },
+    {
+      "order_number": "MD-20261005-0004",
+      "issue_date": "2026-10-05 21:14",
+      "customer": {
+        "name": "اشرف",
+        "email": "test@x.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49,
+        "currency": "USD",
+        "method": "YousrPay",
+        "transaction_id": "TXN-MD-20261005-0004",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    },
+    {
+      "order_number": "MD-20261005-0005",
+      "issue_date": "2026-10-05 21:16",
+      "customer": {
+        "name": "موسي",
+        "email": "test@x.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49,
+        "currency": "USD",
+        "method": "YousrPay",
+        "transaction_id": "TXN-MD-20261005-0005",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    },
+    {
+      "order_number": "MD-20261006-0006",
+      "issue_date": "2026-10-06 06:47",
+      "customer": {
+        "name": "محمد علي",
+        "email": "mohamed@test.com"
+      },
+      "product": {
+        "name_ar": "نظام ماري دبي متعدد الوكلاء",
+        "name_en": "MaryDubai Multi-Agent System",
+        "version": "v1.0",
+        "description_ar": "نظام 7 وكلاء ذكاء اصطناعي مع تحكم بشري صارم",
+        "description_en": "7 AI Agents with Strict Human-in-the-Loop",
+        "features_ar": [
+          "7 وكلاء متخصصين",
+          "74 اختبار ناجح (100%)",
+          "كود المصدر الكامل",
+          "رخصة تجارية",
+          "دعم 30 يوم",
+          "تحديثات مجانية 6 أشهر"
+        ]
+      },
+      "payment": {
+        "amount": 49,
+        "currency": "USD",
+        "method": "YouerPay",
+        "transaction_id": "TXN-MD-20261006-0006",
+        "tier": "Starter",
+        "status": "مدفوع ✅ / Paid ✅"
+      },
+      "company": {
+        "name_ar": "ماري دبي",
+        "name_en": "MaryDubai",
+        "email": "fneed68@gmail.com",
+        "discord": "https://discord.gg/HCb4ufeQDq",
+        "website": "https://payhip.com/marydubai"
+      }
+    }
+  ],
+  "total_revenue": 294.0
+}
