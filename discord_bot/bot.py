@@ -197,37 +197,19 @@ async def buy_command(interaction: discord.Interaction):
     
     embed = discord.Embed(
         title="🛒 اشترِ MaryDubai الآن",
-        description="اختر الباقة المناسبة واضغط الرابط",
-        color=COLORS["success"],
+        description="اختر الباقة المناسبة",
+        color=0x00ff88,
     )
+    embed.add_field(name="🥉 Starter", value="$49", inline=True)
+    embed.add_field(name="🥈 Professional", value="$149", inline=True)
+    embed.add_field(name="🥇 Enterprise", value="$499", inline=True)
+    embed.add_field(
+        name="🔗 رابط الشراء",
+        value="[اضغط هنا للشراء](https://payhip.com/b/eP6gb)",
+        inline=False,
+    )
+    embed.set_footer(text="دفع آمن")
     
-    embed.add_field(
-        name="🥉 Starter — $49",
-        value="مطور واحد • دعم 30 يوم",
-        inline=False,
-    )
-    embed.add_field(
-        name="🥈 Professional — $149",
-        value="حتى 5 مطورين • دعم 90 يوم",
-        inline=False,
-    )
-    embed.add_field(
-        name="🥇 Enterprise — $499",
-        value="مطورين غير محدودين • White-Label",
-        inline=False,
-    )
-    embed.add_field(
-        name="🔗 رابط الشراء المباشر",
-        value=f"[اضغط هنا للشراء]({PRODUCT['payhip_url']})",
-        inline=False,
-    )
-    embed.add_field(
-        name="💳 طرق الدفع المتاحة",
-        value="• YousrPay (يسر باي)\n• Edfali (إدفعلي)\n• MobiCash\n• Moamalat (معاملات)",
-        inline=False,
-    )
-    
-    embed.set_footer(text="دفع آمن عبر DPay")
     await interaction.followup.send(embed=embed)
 
 
