@@ -109,7 +109,7 @@ def run_rag(args):
     Agent = load_agent("rag")
     agent = Agent(
         db_path=args.db,
-        use_local_embedder=not args.use_gemini
+        use_local_embedder=args.use_local
     )
 
     if args.index:
@@ -248,7 +248,7 @@ def main():
     parser.add_argument("--query", "-q", help="[rag] استعلام البحث")
     parser.add_argument("--index", help="[rag] مسار ملف للفهرسة")
     parser.add_argument("--db", default="./rag_index.db", help="[rag] مسار قاعدة البيانات")
-    parser.add_argument("--use-gemini", action="store_true", help="[rag] استخدام Gemini API")
+    parser.add_argument("--use-local", action="store_true", help="[rag] استخدام embedder محلي بدل Gemini")
     parser.add_argument("--action", help="[legal/loop] الإجراء")
     parser.add_argument("--result", help="[loop] النتيجة")
     parser.add_argument("--time", help="[temporal/math] الزمن")

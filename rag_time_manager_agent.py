@@ -137,7 +137,7 @@ if __name__ == "__main__":
     print("=" * 60)
     agent = RAGTimeManagerAgent(
         db_path="./test_rag.db",
-        use_local_embedder=True
+        use_local_embedder=False
     )
     sample_doc = """
     تقرير أمني - HackerOne CTF 232

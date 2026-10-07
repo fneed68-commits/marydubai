@@ -1,12 +1,10 @@
-# index_builder.py
+#!/usr/bin/env python3
 """
 Index Builder - بناء قاعدة معرفة للـ RAG
-الاستخدام:
-  python3 index_builder.py --source ./docs
-  python3 index_builder.py --source ./report.md --clear
-  python3 index_builder.py --source ./ --local
+مع دعم Rate Limit لـ Gemini
 """
 import argparse
+import time
 from pathlib import Path
 from shared.embeddings import GeminiEmbedder, LocalHashEmbedder
 from shared.vector_store import SQLiteVectorStore
@@ -21,7 +19,8 @@ def main():
     parser.add_argument("--db", default="./rag_index.db", help="مسار قاعدة البيانات")
     parser.add_argument("--clear", action="store_true", help="حذف الـ Index الحالي")
     parser.add_argument("--local", action="store_true", help="استخدم embedder محلي")
-    parser.add_argument("--chunk-size", type=int, default=400, help="حجم القطعة")
+    parser.add_argument("--chunk-size", type=int, default=400)
+    parser.add_argument("--delay", type=float, default=1.2, help="تأخير بين القطع (ثواني)")
     args = parser.parse_args()
 
     embedder = LocalHashEmbedder() if args.local else GeminiEmbedder()
@@ -31,6 +30,7 @@ def main():
     print(f"🚀 MaryDubai Index Builder")
     print(f"   Embedder: {embedder_name}")
     print(f"   Index: {args.db}")
+    print(f"   Delay: {args.delay}s per chunk")
 
     if args.clear:
         print("🗑️ حذف الـ Index الحالي...")
@@ -48,14 +48,17 @@ def main():
         for ext in SUPPORTED_EXTENSIONS:
             files.extend(source_path.rglob(f"*{ext}"))
 
-    # استثناء الملفات الخاصة
+    # استثناءات
     files = [f for f in files if not any(
-        p in str(f) for p in ["__pycache__", ".git", "node_modules", "shared/"]
+        p in str(f) for p in ["__pycache__", ".git", "node_modules", 
+                              "shared/", "receipts/", "backup", ".backup"]
     )]
 
     print(f"\n📂 وجدت {len(files)} ملف")
 
     total_chunks = 0
+    failed_chunks = 0
+
     for file_path in files:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -84,13 +87,27 @@ def main():
                 })
                 total_chunks += 1
                 print(f"   ✓ قطعة {chunk_idx}")
+                
+                # تأخير بين القطع
+                if not args.local:
+                    time.sleep(args.delay)
+                    
             except Exception as e:
-                print(f"   ⚠️ فشل: {e}")
+                failed_chunks += 1
+                print(f"   ⚠️ فشل: {str(e)[:100]}")
+                
+                # إذا فشل بسبب Rate Limit، انتظر أكثر
+                if "429" in str(e) or "Rate limit" in str(e):
+                    print(f"   ⏳ انتظار 30s قبل المتابعة...")
+                    time.sleep(30)
 
     print(f"\n{'=' * 60}")
     print(f"✅ اكتمل الفهرسة")
     print(f"   📊 المجموع الكلي: {store.count()} قطعة")
     print(f"   📥 المضافة حديثاً: {total_chunks}")
+    if failed_chunks > 0:
+        print(f"   ⚠️ فشل: {failed_chunks} قطعة (أعد البناء لاحقاً)")
+    print(f"{'=' * 60}")
 
 
 if __name__ == "__main__":
