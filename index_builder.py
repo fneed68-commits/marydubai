@@ -10,7 +10,7 @@ from shared.embeddings import GeminiEmbedder, LocalHashEmbedder
 from shared.vector_store import SQLiteVectorStore
 
 
-SUPPORTED_EXTENSIONS = {".md", ".txt", ".py", ".json", ".html"}
+SUPPORTED_EXTENSIONS = {".md", ".txt"}  # فقط نصوص
 
 
 def main():

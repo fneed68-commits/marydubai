@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 from shared.embeddings import GeminiEmbedder, LocalHashEmbedder
 from shared.vector_store import SQLiteVectorStore
+from shared.cache import SmartCache
 
 
 class RAGTimeManagerAgent:
@@ -16,6 +17,8 @@ class RAGTimeManagerAgent:
         self.embedder = LocalHashEmbedder() if use_local_embedder else GeminiEmbedder()
         self.embedder_mode = "LOCAL" if use_local_embedder else "GEMINI"
         self.store = SQLiteVectorStore(db_path)
+        # Cache للبحث (5 دقائق)
+        self._cache = SmartCache(default_ttl=300)
         self.session_log = []
         self.max_context_items = 5
 
@@ -54,17 +57,33 @@ class RAGTimeManagerAgent:
         return indexed_count
 
     def retrieve_context(self, query, k=None):
-        if k is None:
-            k = self.max_context_items
+        """استرجاع أفضل k قطعة ذات صلة (مع Cache)"""
+        k = k or self.max_context_items
+
+        # 1. افحص Cache
+        cache_key = f"rag_{query}_{k}"
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            print(f"\n⚡ [{self.agent_name}] Cache hit! للاستعلام: '{query[:40]}...'")
+            return cached
+
+        # 2. بحث فعلي
         print(f"\n🔍 [{self.agent_name}] بحث: '{query[:60]}...'")
         try:
             query_embedding = self.embedder.embed(query)
             results = self.store.search(query_embedding, k=k)
             print(f"   ✅ {len(results)} نتيجة")
+
+            # 3. خزّن في Cache
+            self._cache.set(cache_key, results, ttl=300)
             return results
         except Exception as e:
             print(f"   ⚠️ فشل البحث: {e}")
             return []
+
+    def cache_info(self):
+        """معلومات Cache"""
+        return self._cache.info()
 
     def analyze_with_context(self, query, k=None):
         contexts = self.retrieve_context(query, k=k)

@@ -223,3 +223,7 @@ __marimo__/
 *.backup.*
 *.backup
 backup/
+
+# RAG Database (generated)
+rag_index.db
+*.db
