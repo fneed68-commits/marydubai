@@ -221,17 +221,32 @@ async def buy_command(interaction: discord.Interaction):
 async def stats_command(interaction: discord.Interaction):
     await interaction.response.defer()
     import json
-    log_file = os.path.expanduser("~/termux_secops_project/sales/sales_log.json")
-    sales_count = 0
-    total_revenue = 0
-    if os.path.exists(log_file):
-        try:
-            with open(log_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                sales_count = len(data.get('sales', []))
-                total_revenue = data.get('total_revenue', 0)
-        except Exception:
-            pass
+    from pathlib import Path
+    import json as _json
+    
+    # مسار آمن ومقيّد
+    ALLOWED_DIR = Path.home() / "termux_secops_project" / "sales"
+    log_file = ALLOWED_DIR / "sales_log.json"
+    
+    # التحقق الصريح من الأمان
+    try:
+        resolved = log_file.resolve()
+        if not str(resolved).startswith(str(ALLOWED_DIR.resolve())):
+            raise ValueError("Path outside allowed directory")
+    except (ValueError, OSError):
+        sales_count = 0
+        total_revenue = 0
+    else:
+        sales_count = 0
+        total_revenue = 0
+        if resolved.is_file():
+            try:
+                with open(resolved, 'r', encoding='utf-8') as f:
+                    data = _json.load(f)
+                    sales_count = len(data.get('sales', []))
+                    total_revenue = data.get('total_revenue', 0)
+            except (OSError, ValueError, KeyError):
+                pass
     embed = discord.Embed(title="📊 إحصائيات MaryDubai", color=COLORS["warning"])
     embed.add_field(name="🛒 إجمالي المبيعات", value=f"**{sales_count}** عملية", inline=True)
     embed.add_field(name="💰 إجمالي الإيرادات", value=f"**${total_revenue}**", inline=True)
@@ -488,7 +503,8 @@ if __name__ == "__main__":
     TOKEN = os.getenv("DISCORD_BOT_TOKEN")
     if not TOKEN:
         print("❌ DISCORD_BOT_TOKEN غير موجود")
-        print("شغّل: bash ~/.marydubai/setup_token.sh")
+        # لا نطبع أي مسار يحتوي على معلومات حساسة
+        print("💡 شغّل setup_token.sh لإعداد التوكن")
         sys.exit(1)
     print("🚀 جاري تشغيل البوت...")
     bot.run(TOKEN)
