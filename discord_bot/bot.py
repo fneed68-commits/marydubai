@@ -499,6 +499,104 @@ bot.tree.add_command(math_group)
 # التشغيل
 # ═══════════════════════════════════════════════════════
 
+
+
+# ═══════════════════════════════════════════════════════
+# ⛓️ أوامر Blockchain
+# ═══════════════════════════════════════════════════════
+
+chain_group = app_commands.Group(name="chain", description="أدوات البلوكشين والعملات")
+
+
+@chain_group.command(name="validate", description="التحقق من عنوان محفظة")
+@app_commands.describe(address="عنوان المحفظة", network="الشبكة (ethereum/bitcoin)")
+async def chain_validate(
+    interaction: discord.Interaction,
+    address: str,
+    network: str = "ethereum",
+):
+    from blockchain_agent import BlockchainAgent
+    agent = BlockchainAgent()
+    
+    valid, msg = agent.validate_address(address, network)
+    
+    color = 0x00ff88 if valid else 0xff3366
+    emoji = "✅" if valid else "❌"
+    
+    embed = discord.Embed(title=f"{emoji} التحقق من العنوان", color=color)
+    embed.add_field(name="📍 العنوان", value=f"`{address[:20]}...`", inline=False)
+    embed.add_field(name="🌐 الشبكة", value=network, inline=True)
+    embed.add_field(name="📊 النتيجة", value=msg, inline=True)
+    embed.set_footer(text="MaryDubai Blockchain")
+    await interaction.response.send_message(embed=embed)
+
+
+@chain_group.command(name="gas", description="حساب تكلفة الغاز")
+@app_commands.describe(gas_limit="حد الغاز", gas_price="سعر الغاز بـ Gwei")
+async def chain_gas(
+    interaction: discord.Interaction,
+    gas_limit: int,
+    gas_price: float = 30.0,
+):
+    from blockchain_agent import BlockchainAgent
+    agent = BlockchainAgent()
+    
+    result = agent.calculate_gas_cost(gas_limit, gas_price)
+    
+    embed = discord.Embed(title="⛽ حساب تكلفة الغاز", color=0x00d9ff)
+    embed.add_field(name="Gas Limit", value=f"{result['gas_limit']:,}", inline=True)
+    embed.add_field(name="Gas Price", value=f"{result['gas_price_gwei']} Gwei", inline=True)
+    embed.add_field(name="💰 التكلفة", value=f"{result['cost_eth']:.8f} ETH", inline=False)
+    embed.add_field(name="💵 بالدولار", value=f"${result['cost_usd']:.2f}", inline=True)
+    embed.set_footer(text="ETH = $3000 (تقريبي)")
+    await interaction.response.send_message(embed=embed)
+
+
+@chain_group.command(name="risk", description="تحليل مخاطر معاملة")
+@app_commands.describe(
+    from_address="عنوان المرسل",
+    to_address="عنوان المستقبل",
+    amount="المبلغ بـ ETH",
+)
+async def chain_risk(
+    interaction: discord.Interaction,
+    from_address: str,
+    to_address: str,
+    amount: float,
+):
+    await interaction.response.defer()
+    
+    from blockchain_agent import BlockchainAgent
+    agent = BlockchainAgent()
+    
+    result = agent.analyze_transaction_risk(from_address, to_address, amount)
+    
+    if result["score"] >= 80:
+        color = 0x00ff88
+    elif result["score"] >= 60:
+        color = 0xffaa00
+    else:
+        color = 0xff3366
+    
+    embed = discord.Embed(title="🔍 تحليل مخاطر المعاملة", color=color)
+    embed.add_field(name="📤 من", value=f"`{from_address[:15]}...`", inline=False)
+    embed.add_field(name="📥 إلى", value=f"`{to_address[:15]}...`", inline=False)
+    embed.add_field(name="💰 المبلغ", value=f"{amount} ETH", inline=True)
+    embed.add_field(name="📊 النتيجة", value=f"{result['score']}/100", inline=True)
+    embed.add_field(name="🎯 التصنيف", value=result["level"], inline=True)
+    
+    if result["risks"]:
+        embed.add_field(name="⚠️ المخاطر", value="\n".join(result["risks"][:5]), inline=False)
+    else:
+        embed.add_field(name="✅ المخاطر", value="لا مخاطر", inline=False)
+    
+    embed.set_footer(text="MaryDubai Blockchain")
+    await interaction.followup.send(embed=embed)
+
+
+bot.tree.add_command(chain_group)
+
+
 if __name__ == "__main__":
     TOKEN = os.getenv("DISCORD_BOT_TOKEN")
     if not TOKEN:
