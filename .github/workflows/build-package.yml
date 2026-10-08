@@ -11,23 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🧹 Clean workspace
-        shell: bash
-        run: |
-          set +e  # ← تعطيل exit-on-error
-          find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
-          find . -type f -name "*.pyc" -delete 2>/dev/null
-          find . -type f -name "*.backup*" -delete 2>/dev/null
-          find . -type f -name "*.db" -delete 2>/dev/null
-          find . -type f -name "*.tar.gz" -delete 2>/dev/null
-          echo "✅ Workspace clean"
-
       - name: 📦 Build archive
-        shell: bash
         run: |
-          set +e  # ← تعطيل exit-on-error
-          echo "Building archive..."
+          set +e
           
+          echo "🔨 Building archive..."
+          
+          # تجاهل تحذير tar
           tar -czf /tmp/marydubai_latest.tar.gz \
             --exclude='.git' \
             --exclude='__pycache__' \
@@ -35,24 +25,25 @@ jobs:
             --exclude='*.pyc' \
             --exclude='*.db' \
             --exclude='*.tar.gz' \
-            . 2>&1 | grep -v "file changed"
+            --exclude='*.backup*' \
+            . 2>/dev/null
           
-          echo "Tar exit: $?"
-          
-          # تحقق
+          # تحقق يدوياً
           if [ -f /tmp/marydubai_latest.tar.gz ]; then
-            echo "✅ Archive created"
+            echo "✅ Archive created successfully"
             ls -la /tmp/marydubai_latest.tar.gz
+            
+            # انقل للمجلد
             mv /tmp/marydubai_latest.tar.gz ./marydubai_latest.tar.gz
-            echo "✅ Moved to workspace"
             ls -la marydubai_latest.tar.gz
           else
-            echo "❌ Archive failed"
+            echo "❌ Archive not found"
             exit 1
           fi
+          
+          echo "✅ Build complete"
 
       - name: 📤 Upload artifact
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: marydubai-package
