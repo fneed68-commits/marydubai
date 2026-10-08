@@ -1,0 +1,58 @@
+name: 🚀 Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Create package
+        run: |
+          cd $GITHUB_WORKSPACE
+          tar -czf marydubai_${{ github.ref_name }}.tar.gz \
+            --exclude='.git' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            --exclude='.github' \
+            --exclude='*.db' \
+            --exclude='*.backup*' \
+            .
+
+      - name: 📝 Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname | head -2 | tail -1)
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "## 📋 التغييرات" > /tmp/changelog.md
+          echo "" >> /tmp/changelog.md
+          git log ${PREV_TAG}..HEAD --pretty=format:"- %s" >> /tmp/changelog.md
+          cat /tmp/changelog.md
+
+      - name: 🎉 Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "🎯 MaryDubai ${{ github.ref_name }}"
+          body_path: /tmp/changelog.md
+          files: marydubai_${{ github.ref_name }}.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

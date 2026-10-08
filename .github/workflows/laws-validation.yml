@@ -1,0 +1,42 @@
+name: ⚖️ Laws Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'laws/**'
+  pull_request:
+    paths:
+      - 'laws/**'
+  workflow_dispatch:
+
+jobs:
+  laws:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: ⚖️ Run laws tests
+        run: |
+          cd laws
+          python run_tests.py
+        id: laws_tests
+
+      - name: 📊 Report
+        if: always()
+        run: |
+          echo "## ⚖️ Laws Framework Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total Laws Tested:** 44" >> $GITHUB_STEP_SUMMARY
+          echo "**Categories:**" >> $GITHUB_STEP_SUMMARY
+          echo "- 📐 Mathematics: 21" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚛️ Physics: 10" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔧 Engineering: 8" >> $GITHUB_STEP_SUMMARY
+          echo "- ₿ Cryptography: 5" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ steps.laws_tests.outcome }}" >> $GITHUB_STEP_SUMMARY

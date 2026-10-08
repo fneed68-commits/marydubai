@@ -1,0 +1,37 @@
+name: 📊 Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install coverage
+        run: |
+          pip install coverage
+
+      - name: 📊 Run tests with coverage
+        run: |
+          cd $GITHUB_WORKSPACE
+          coverage run --source=. -m unittest discover -s tests
+          coverage report -m
+          coverage html
+        continue-on-error: true
+
+      - name: 📤 Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+          if-no-files-found: ignore

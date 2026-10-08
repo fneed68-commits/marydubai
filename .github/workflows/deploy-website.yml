@@ -1,0 +1,35 @@
+name: 🌐 Deploy Website
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'website/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 📄 Check website
+        run: |
+          if [ ! -f website/index.html ]; then
+            echo "❌ website/index.html غير موجود"
+            exit 1
+          fi
+          echo "✅ Website ready"
+          echo "Size: $(du -h website/index.html | cut -f1)"
+
+      - name: 📤 Upload website artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: website/
+
+      - name: 📊 Status
+        run: |
+          echo "## 🌐 Website" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Ready to deploy" >> $GITHUB_STEP_SUMMARY
+          echo "**Location:** https://marydubai-agents.netlify.app" >> $GITHUB_STEP_SUMMARY

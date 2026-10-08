@@ -1,0 +1,42 @@
+name: 📦 Build Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Build archive
+        run: |
+          tar -czf marydubai_latest.tar.gz \
+            --exclude='.git' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            --exclude='*.db' \
+            --exclude='.github' \
+            --exclude='*.backup*' \
+            .
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: marydubai-package
+          path: marydubai_latest.tar.gz
+          retention-days: 30
+
+      - name: 📊 Report size
+        run: |
+          SIZE=$(du -h marydubai_latest.tar.gz | cut -f1)
+          echo "## 📦 Package Built" >> $GITHUB_STEP_SUMMARY
+          echo "**Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "**File:** marydubai_latest.tar.gz" >> $GITHUB_STEP_SUMMARY
