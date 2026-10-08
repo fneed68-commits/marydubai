@@ -1,0 +1,41 @@
+name: 🔍 Code Quality
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    
+    - name: 📦 Install linters
+      run: |
+        pip install flake8 pylint
+    
+    - name: 🔍 Flake8 Check
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      continue-on-error: true
+    
+    - name: 🔍 Find TODO/FIXME
+      run: |
+        echo "## 📝 TODOs and FIXMEs" >> $GITHUB_STEP_SUMMARY
+        grep -rn "TODO\|FIXME\|XXX" --include="*.py" . | head -20 || echo "No TODOs found"
+      continue-on-error: true
+    
+    - name: 📊 Count lines
+      run: |
+        echo "## 📊 Code Statistics" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Python files:** $(find . -name '*.py' | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "**Total lines:** $(find . -name '*.py' -exec cat {} \; | wc -l)" >> $GITHUB_STEP_SUMMARY
