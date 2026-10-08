@@ -11,48 +11,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       - name: 🧹 Clean workspace
+        shell: bash
         run: |
-          find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-          find . -type f -name "*.pyc" -delete 2>/dev/null || true
-          find . -type f -name "*.backup*" -delete 2>/dev/null || true
-          find . -type f -name "*.db" -delete 2>/dev/null || true
-          find . -type f -name "*.tar.gz" -delete 2>/dev/null || true
+          set +e  # ← تعطيل exit-on-error
+          find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
+          find . -type f -name "*.pyc" -delete 2>/dev/null
+          find . -type f -name "*.backup*" -delete 2>/dev/null
+          find . -type f -name "*.db" -delete 2>/dev/null
+          find . -type f -name "*.tar.gz" -delete 2>/dev/null
+          echo "✅ Workspace clean"
 
       - name: 📦 Build archive
+        shell: bash
         run: |
-          # في Ubuntu، /tmp موجود (نفس فكرة $TMPDIR في Termux)
+          set +e  # ← تعطيل exit-on-error
+          echo "Building archive..."
+          
           tar -czf /tmp/marydubai_latest.tar.gz \
             --exclude='.git' \
             --exclude='__pycache__' \
+            --exclude='.github' \
             --exclude='*.pyc' \
             --exclude='*.db' \
-            --exclude='*.backup*' \
             --exclude='*.tar.gz' \
-            --warning=no-file-changed \
-            . 2>/dev/null
+            . 2>&1 | grep -v "file changed"
           
-          # انقل للمجلد الحالي
-          mv /tmp/marydubai_latest.tar.gz ./marydubai_latest.tar.gz
+          echo "Tar exit: $?"
           
-          echo "✅ Archive created"
-          ls -la marydubai_latest.tar.gz
+          # تحقق
+          if [ -f /tmp/marydubai_latest.tar.gz ]; then
+            echo "✅ Archive created"
+            ls -la /tmp/marydubai_latest.tar.gz
+            mv /tmp/marydubai_latest.tar.gz ./marydubai_latest.tar.gz
+            echo "✅ Moved to workspace"
+            ls -la marydubai_latest.tar.gz
+          else
+            echo "❌ Archive failed"
+            exit 1
+          fi
 
       - name: 📤 Upload artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: marydubai-package
           path: marydubai_latest.tar.gz
           retention-days: 30
-
-      - name: 📊 Report size
-        run: |
-          SIZE=$(du -h marydubai_latest.tar.gz | cut -f1)
-          echo "## 📦 Package Built" >> $GITHUB_STEP_SUMMARY
-          echo "**Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
