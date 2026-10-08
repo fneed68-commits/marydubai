@@ -47,7 +47,7 @@ jobs:
           cat /tmp/changelog.md
 
       - name: 🎉 Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           name: "🎯 MaryDubai ${{ github.ref_name }}"
           body_path: /tmp/changelog.md
