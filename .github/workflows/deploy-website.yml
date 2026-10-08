@@ -23,7 +23,7 @@ jobs:
           echo "Size: $(du -h website/index.html | cut -f1)"
 
       - name: 📤 Upload website artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: website
           path: website/
