@@ -16,16 +16,29 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: 🧹 Clean workspace
+        run: |
+          find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+          find . -type f -name "*.pyc" -delete 2>/dev/null || true
+          find . -type f -name "*.backup*" -delete 2>/dev/null || true
+
       - name: 📦 Build archive
         run: |
-          tar -czf marydubai_latest.tar.gz \
+          # اكتب إلى /tmp لتجنب مشكلة "file changed as we read it"
+          tar -czf /tmp/marydubai_latest.tar.gz \
             --exclude='.git' \
             --exclude='__pycache__' \
             --exclude='*.pyc' \
             --exclude='*.db' \
-            --exclude='.github' \
             --exclude='*.backup*' \
-            .
+            --warning=no-file-changed \
+            . || true
+          
+          # انقل الملف للمجلد الحالي
+          mv /tmp/marydubai_latest.tar.gz ./marydubai_latest.tar.gz
+          
+          echo "✅ Archive created"
+          ls -la marydubai_latest.tar.gz
 
       - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
@@ -39,4 +52,3 @@ jobs:
           SIZE=$(du -h marydubai_latest.tar.gz | cut -f1)
           echo "## 📦 Package Built" >> $GITHUB_STEP_SUMMARY
           echo "**Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
-          echo "**File:** marydubai_latest.tar.gz" >> $GITHUB_STEP_SUMMARY
