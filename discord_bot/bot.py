@@ -1,3 +1,4 @@
+from server import keep_alive
 #!/usr/bin/env python3
 """
 MaryDubai Discord Bot - النسخة الكاملة
@@ -37,6 +38,39 @@ COLORS = {
     "success": 0x00ff88,
     "warning": 0xffaa00,
 }
+
+def _get_gemini_key():
+    """يقرأ المفتاح من البيئة ثم الملفات الاحتياطية."""
+    key = os.getenv("GEMINI_API_KEY")
+    if key and key.strip():
+        return key.strip()
+    kf = os.path.expanduser("~/.marydubai/gemini_key.txt")
+    if os.path.exists(kf):
+        with open(kf, "r") as f:
+            v = f.read().strip()
+            if v:
+                return v
+    env_f = os.path.expanduser("~/termux_secops_project/.env")
+    if os.path.exists(env_f):
+        with open(env_f, "r") as f:
+            for line in f:
+                if line.startswith("GEMINI_API_KEY="):
+                    return line.split("=", 1)[1].strip()
+    return None
+
+
+def _get_gemini_model():
+    m = os.getenv("GEMINI_MODEL")
+    if m and m.strip():
+        return m.strip()
+    env_f = os.path.expanduser("~/termux_secops_project/.env")
+    if os.path.exists(env_f):
+        with open(env_f, "r") as f:
+            for line in f:
+                if line.startswith("GEMINI_MODEL="):
+                    return line.split("=", 1)[1].strip()
+    return "gemini-3.8-flash"
+
 
 def clean_text(text):
     """ينظف النص من HTML والوسوم الزائدة"""
@@ -293,94 +327,132 @@ async def docs_command(interaction: discord.Interaction):
     await interaction.followup.send(embed=embed)
 
 
-@bot.tree.command(name="ask", description="اسأل عن MaryDubai (بحث ذكي مع Cache)")
-@app_commands.describe(question="سؤالك عن المشروع أو المنتج")
+@bot.tree.command(name="ask", description="اسأل عن MaryDubai أو أي سؤال عام")
+@app_commands.describe(question="سؤالك")
 async def ask_command(interaction: discord.Interaction, question: str):
     await interaction.response.defer()
-    
     try:
         from shared.embeddings import GeminiEmbedder
         from shared.vector_store import SQLiteVectorStore
         from shared.cache import SmartCache
-        
-        # Cache عام (يبقى طوال عمر البوت)
+        import urllib.request, json as _json
+
         if not hasattr(ask_command, '_cache'):
             ask_command._cache = SmartCache(default_ttl=3600)
-        
         cache = ask_command._cache
-        
-        # 1. افحص Cache
         cache_key = f"ask_{question}"
+
         cached = cache.get(cache_key)
-        
         if cached is not None:
-            # إجابة من Cache
+            kind = cached.get("kind", "general")
+            if kind == "official":
+                embed = discord.Embed(
+                    title="🏢 إجابة رسمية — MaryDubai",
+                    description=f"**{question}**",
+                    color=COLORS["accent"],
+                )
+                embed.add_field(
+                    name="📄 الإجابة",
+                    value=clean_text(cached["text"])[:1000] + ("..." if len(cached["text"]) > 1000 else ""),
+                    inline=False,
+                )
+                embed.add_field(name="📁 المصدر", value=cached.get("source", "وثائق MaryDubai"), inline=True)
+                embed.add_field(name="📊 الدقة", value=f"{cached.get('score', 1.0):.0%}", inline=True)
+                embed.set_footer(text="MaryDubai Official • Cache ⚡")
+            else:
+                embed = discord.Embed(
+                    title="💬 إجابة",
+                    description=f"**{question}**",
+                    color=COLORS["primary"],
+                )
+                embed.add_field(
+                    name="📄 الإجابة",
+                    value=clean_text(cached["text"])[:1000] + ("..." if len(cached["text"]) > 1000 else ""),
+                    inline=False,
+                )
+                embed.set_footer(text="MaryDubai AI • Cache ⚡")
+            await interaction.followup.send(embed=embed)
+            return
+
+        # 1. بحث RAG (أولوية للأسئلة الرسمية)
+        best = None
+        try:
+            store = SQLiteVectorStore(os.path.expanduser("~/termux_secops_project/rag_index.db"))
+            if store.count() > 0:
+                emb = GeminiEmbedder()
+                query_vec = emb.embed(question)
+                results = store.search(query_vec, k=3)
+                if results and results[0]["score"] >= 0.6:
+                    best = results[0]
+        except Exception as e:
+            print(f"⚠️ RAG فشل: {e}")
+
+        # 2. إذا RAG طابق → إجابة رسمية
+        if best:
+            cache_data = {
+                "text": best["text"],
+                "score": best["score"],
+                "source": best["metadata"].get("filename", "وثائق MaryDubai"),
+                "kind": "official",
+            }
+            cache.set(cache_key, cache_data, ttl=3600)
+
             embed = discord.Embed(
-                title="🔍 إجابة (من Cache ⚡)",
+                title="🏢 إجابة رسمية — MaryDubai",
                 description=f"**{question}**",
-                color=COLORS["success"],
+                color=COLORS["accent"],
             )
             embed.add_field(
                 name="📄 الإجابة",
-                value=clean_text(cached["text"])[:1000] + ("..." if len(cached["text"]) > 1000 else ""),
+                value=clean_text(best["text"])[:1000] + ("..." if len(best["text"]) > 1000 else ""),
                 inline=False,
             )
-            embed.add_field(name="📊 دقة المطابقة", value=f"{cached['score']:.2%}", inline=True)
-            embed.add_field(name="📁 المصدر", value=cached["source"], inline=True)
-            embed.set_footer(text="MaryDubai RAG • Cache Hit ⚡")
+            embed.add_field(name="📁 المصدر", value=cache_data["source"], inline=True)
+            embed.add_field(name="📊 الدقة", value=f"{best['score']:.0%}", inline=True)
+            embed.set_footer(text="MaryDubai Official • مدعوم بـ Gemini RAG")
             await interaction.followup.send(embed=embed)
             return
-        
-        # 2. بحث فعلي
-        store = SQLiteVectorStore(os.path.expanduser("~/termux_secops_project/rag_index.db"))
-        if store.count() == 0:
-            await interaction.followup.send("⚠️ قاعدة المعرفة فارغة.")
+
+        # 3. Fallback → دردشة Gemini مباشرة
+        api_key = _get_gemini_key()
+        if not api_key:
+            await interaction.followup.send("❌ مفتاح Gemini غير متوفر.")
             return
 
-        emb = GeminiEmbedder()
-        query_vec = emb.embed(question)
-        results = store.search(query_vec, k=3)
-
-        if not results:
-            await interaction.followup.send("❌ لم أجد إجابة.")
-            return
-
-        best = results[0]
-        if best["score"] < 0.5:
-            await interaction.followup.send(
-                f"🤔 لم أجد إجابة دقيقة (أعلى تشابه: {best['score']:.2f}).\n"
-                "جرّب صياغة مختلفة، أو استخدم `/contact`."
-            )
-            return
-
-        # 3. خزّن في Cache
-        cache_data = {
-            "text": best["text"],
-            "score": best["score"],
-            "source": best["metadata"].get("filename", "؟"),
+        model = _get_gemini_model()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        payload = {
+            "contents": [{"parts": [{"text": "أنت مساعد ذكي ودود. أجب بالعربية بوضوح وإيجاز.\n\nسؤال المستخدم: " + question}]}],
         }
-        cache.set(cache_key, cache_data, ttl=3600)
+        req = urllib.request.Request(
+            url,
+            data=_json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = _json.loads(resp.read().decode("utf-8"))
+            answer = data["candidates"][0]["content"]["parts"][0]["text"]
 
-        # 4. اعرض
+        cache_data = {"text": answer, "score": 1.0, "source": "Gemini", "kind": "general"}
+        cache.set(cache_key, cache_data, ttl=1800)
+
         embed = discord.Embed(
-            title="🔍 إجابة من قاعدة معرفة MaryDubai",
+            title="💬 إجابة",
             description=f"**{question}**",
-            color=COLORS["accent"],
+            color=COLORS["primary"],
         )
         embed.add_field(
             name="📄 الإجابة",
-            value=clean_text(best["text"])[:1000] + ("..." if len(best["text"]) > 1000 else ""),
+            value=clean_text(answer)[:1000] + ("..." if len(answer) > 1000 else ""),
             inline=False,
         )
-        embed.add_field(name="📊 دقة المطابقة", value=f"{best['score']:.2%}", inline=True)
-        embed.add_field(name="📁 المصدر", value=cache_data["source"], inline=True)
-        embed.set_footer(text="MaryDubai RAG • مدعوم بـ Gemini")
+        embed.set_footer(text=f"MaryDubai AI • {model}")
         await interaction.followup.send(embed=embed)
-    
+
     except Exception as e:
         print(f"❌ خطأ في /ask: {e}")
         await interaction.followup.send(f"❌ حدث خطأ: {str(e)[:100]}")
-
 
 # ═══════════════════════════════════════════════════════
 # 🧮 أوامر الرياضيات والفيزياء (Group)
