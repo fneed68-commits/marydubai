@@ -1,4 +1,7 @@
-from server import keep_alive
+try:
+    from server import keep_alive
+except ImportError:
+    keep_alive = lambda: None
 #!/usr/bin/env python3
 """
 MaryDubai Discord Bot - النسخة الكاملة
